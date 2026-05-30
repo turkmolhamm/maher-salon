@@ -71,7 +71,7 @@ export const store = {
   getSchedule: () => load('schedule', SEED_SCHEDULE),
   saveSchedule: (v) => save('schedule', v),
 
-  getAdminPin: () => load('adminPin', '1234'),
+  getAdminPin: () => load('adminPin', '1970'),
   saveAdminPin: (v) => save('adminPin', v),
 
   isAdmin: () => load('isAdmin', false),
