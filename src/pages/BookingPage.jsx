@@ -20,7 +20,26 @@ export default function BookingPage() {
   const [successOpen, setSuccessOpen] = useState(false)
   const [lastBooking, setLastBooking] = useState(null)
   const [loading, setLoading]   = useState(false)
+const [pushEnabled, setPushEnabled] = useState(false)
+const [pushLoading, setPushLoading] = useState(false)
 
+useEffect(() => {
+  if (Notification.permission === 'granted') setPushEnabled(true)
+}, [])
+
+async function enablePush() {
+  setPushLoading(true)
+  const token = await requestNotificationPermission()
+  if (token) {
+    setPushEnabled(true)
+    toast('✅ تم تفعيل الإشعارات!')
+  } else {
+    toast('❌ لم يتم السماح بالإشعارات', 'error')
+  }
+  setPushLoading(false)
+}
+
+function today() { return new Date().toISOString().split('T')[0] }
   function today() { return new Date().toISOString().split('T')[0] }
 
   // Load schedule from Firebase
@@ -107,6 +126,26 @@ export default function BookingPage() {
       <SectionHeader title="احجز موعدك" subtitle="Book Your Appointment" />
 
       {/* Barber cards */}
+      {!pushEnabled && (
+  <Card style={{ padding:16, marginBottom:20, borderColor:'var(--gold-dark)', background:'var(--gold-subtle)' }}>
+    <div style={{ display:'flex', alignItems:'center', justifyContent:'space-between', gap:12 }}>
+      <div>
+        <div style={{ fontSize:14, fontWeight:700, color:'var(--gold)', marginBottom:3 }}>
+          🔔 فعّل الإشعارات على جهازك
+        </div>
+        <div style={{ fontSize:12, color:'var(--text-muted)' }}>
+          عشان يوصلك إشعار لما يكون في عرض أو موعد جديد
+        </div>
+      </div>
+      <GoldBtn sm onClick={enablePush} disabled={pushLoading}>
+        {pushLoading ? '...' : 'تفعيل 🔔'}
+      </GoldBtn>
+    </div>
+  </Card>
+)}
+
+{/* Barber cards */}
+<div style={{ display:'grid', gridTemplateColumns:'1fr 1fr', gap:12, marginBottom:24 }}></div>
       <div style={{ display:'grid', gridTemplateColumns:'1fr 1fr', gap:12, marginBottom:24 }}>
         {Object.values(BARBERS).map(b => (
           <BarberCard key={b.id} barber={b} selected={barber===b.id}
